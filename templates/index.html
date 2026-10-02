@@ -1,19 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>65 Aniversario · FCA Tijuana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
 <body>
-    <div class="App">
-        <header class="App-header">
-            <img src="{{ url_for('static', filename='Octocat.png') }}" class="App-logo" alt="logo" />
-            <p>
-                GitHub Codespaces <span class="heart">♥️</span> Flask
-            </p>
-            <p class="small">
-                Edit <code>templates/index.html</code> and refresh to see your changes!
-            </p>
-        </header>
-    </div>
-</body>
 
+  <!-- ===== NAVEGACIÓN ===== -->
+  <header class="nav">
+    <a href="#" class="nav__logo">
+      <img src="{{ url_for('static', filename='img/logo_uabc_fca.webp') }}" alt="FCA Tijuana"
+           onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'FCA Tijuana'}))">
+    </a>
+    <nav class="nav__links" aria-label="Principal">
+      <a href="https://fca.tij.uabc.mx/principal-v2">Inicio</a>
+      <a href="#" class="is-active">65 Aniversario</a>
+      <a href="#eventos">Eventos</a>
+      <a href="#voces">Egresados</a>
+    </nav>
+    <div class="nav__actions">
+      <button class="btn btn--ghost btn--sm">Buscar</button>
+      <a href="https://fca.tij.uabc.mx/web/login" class="btn btn--light btn--sm">Iniciar sesión</a>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <img class="hero__mascot" src="{{ url_for('static', filename='cimarron.png') }}" alt="" aria-hidden="true">
+    <p class="hero__tag">Celebremos juntos</p>
+    <h1 class="hero__title">65 años de historia,<br>formación y futuro</h1>
+    <p class="hero__text">
+      Viviremos una serie de eventos especiales para conmemorar el legado,
+      fortalecer nuestra comunidad y proyectar el futuro de nuestra Facultad.
+    </p>
+    <div class="hero__buttons">
+      <a href="#eventos" class="btn btn--solid">Ver eventos</a>
+      <a href="#historia" class="btn btn--ghost">Nuestra historia</a>
+    </div>
+    <div class="hero__logos">
+      <img src="{{ url_for('static', filename='img/logo_uabc_fca.webp') }}" alt="UABC FCA" onerror="this.remove()">
+      <img src="{{ url_for('static', filename='img/logo_fca_65.webp') }}" alt="Logo 65 Aniversario FCA" onerror="this.remove()">
+    </div>
+    <div class="hero__glow" aria-hidden="true"></div>
+  </section>
+
+  {% macro cinta(texto) %}
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      {% for i in range(12) %}<span>{{ texto }}</span>{% endfor %}
+    </div>
+  </div>
+  {% endmacro %}
+  {{ cinta("65 años formando líderes") }}
+
+  <!-- ===== PRÓXIMOS EVENTOS ===== -->
+  <section class="events" id="eventos">
+    <div class="events__head">
+      <div>
+        <h2 class="section-title section-title--left">Próximos eventos</h2>
+        <p class="section-sub">Sé parte de esta celebración histórica</p>
+      </div>
+      <a href="https://fca.tij.uabc.mx/blog" class="btn btn--ghost btn--sm">Ver todos</a>
+    </div>
+    <div class="events__grid">
+      {% for ev in eventos %}
+      <article class="event" style="--img: url('{{ url_for('static', filename='img/' ~ ev.img) }}')">
+        <p class="event__date">{{ ev.fecha }}</p>
+        <h3 class="event__title">{{ ev.titulo }}</h3>
+        <p class="event__place">{{ ev.lugar }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ===== CARRERA ===== -->
+  <section class="race">
+    <div class="race__inner">
+      <h2 class="race__title">Únete a nuestra carrera del 65 Aniversario</h2>
+      <p class="race__text">Cada paso nos une. Corre con estudiantes, docentes y egresados.</p>
+      <a href="#" class="btn btn--light">Inscribirme a la carrera</a>
+    </div>
+  </section>
+
+  <!-- ===== CIFRAS ===== -->
+  <section class="stats" id="historia">
+    <h2 class="section-title">65 años de historia</h2>
+    <div class="stats__grid">
+      {% for c in cifras %}
+      <div class="stat">
+        <p class="stat__num"><span>{{ c.prefijo }}</span><span class="counter" data-target="{{ c.valor }}">{{ c.valor }}</span></p>
+        <p class="stat__label">{{ c.texto }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {{ cinta("Voces que inspiran") }}
+
+  <!-- ===== VOCES QUE INSPIRAN (carrusel) ===== -->
+  <section class="roster" id="voces">
+    <h2 class="section-title">Voces que inspiran</h2>
+    <p class="section-sub">Egresados que hoy dejan huella</p>
+    <div class="roster__row">
+      {% for p in egresados %}
+      <button class="card {% if p.id == destacado.id %}is-active{% endif %}"
+              data-id="{{ p.id }}"
+              style="--img: url('{{ url_for('static', filename='img/' ~ p.img) }}')"
+              aria-pressed="{{ 'true' if p.id == destacado.id else 'false' }}">
+        <span class="card__info">
+          <span class="card__name">{{ p.nombre }}</span>
+          <span class="card__role">{{ p.carrera }}</span>
+        </span>
+      </button>
+      {% endfor %}
+    </div>
+  </section>
+
+  {{ cinta("Voces que inspiran") }}
+
+  <!-- ===== EGRESADO DESTACADO ===== -->
+  <section class="select" id="seleccion">
+    <div class="select__left">
+      <h2 class="select__title">Egresado<br>destacado</h2>
+      <hr class="select__rule">
+      <p class="select__desc" id="sel-desc">{{ destacado.testimonio }}</p>
+      <a href="{{ destacado.video }}" class="select__more" id="sel-video" target="_blank" rel="noopener">Ver testimonio</a>
+    </div>
+
+    <figure class="select__figure">
+      <img id="sel-img" src="{{ url_for('static', filename='img/' ~ destacado.img) }}"
+           alt="{{ destacado.nombre }}" onerror="this.style.visibility='hidden'">
+      <figcaption id="sel-name">{{ destacado.nombre }}</figcaption>
+    </figure>
+
+    <div class="select__right">
+      <div class="note">
+        <h3>Carrera</h3>
+        <p id="sel-carrera">{{ destacado.carrera }}</p>
+      </div>
+      <div class="note">
+        <h3>Generación</h3>
+        <p id="sel-gen">{{ destacado.generacion }}</p>
+      </div>
+      <div class="note">
+        <h3>Facultad</h3>
+        <p>Contaduría y Administración, UABC Campus Tijuana</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VIDEO ===== -->
+  <section class="video">
+    <div class="video__frame">
+      <iframe src="https://www.youtube.com/embed/isR7S_0SBHY" title="Voces que inspiran, FCA 65 Aniversario"
+              loading="lazy" allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+    </div>
+  </section>
+
+  <!-- ===== LLAMADO FINAL ===== -->
+  <section class="cta">
+    <h2 class="cta__title">¡Súmate a la celebración!</h2>
+    <p class="cta__text">Participa, comparte y vive el 65 Aniversario de la FCA.</p>
+    <a href="https://fca.tij.uabc.mx/blog/noticias65-8" class="btn btn--light">Ver eventos del 65 Aniversario</a>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer__cols">
+      {% for titulo, links in footer_links.items() %}
+      <div>
+        <h4>{{ titulo }}</h4>
+        <ul>
+          {% for texto, url in links %}<li><a href="{{ url }}" target="_blank" rel="noopener">{{ texto }}</a></li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+      <div>
+        <h4>Nuestras redes sociales</h4>
+        <ul class="footer__social">
+          {% for red, url in redes %}<li><a href="{{ url }}" target="_blank" rel="noopener">{{ red }}</a></li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__contact">
+      <div>
+        <p class="footer__name">Facultad de Contaduría y Administración</p>
+        <p>UABC, Campus Tijuana</p>
+        <p>Calzada Universidad 14418, Mesa de Otay, Tijuana, B.C., México, C.P. 22427</p>
+      </div>
+      <div>
+        <p>Línea Universitaria: <a href="tel:+526649797500">+52 (664) 979-7500</a></p>
+        <p>Línea directa de la Facultad: <a href="tel:+526646833174">+52 (664) 683-3174</a></p>
+      </div>
+    </div>
+
+    <p class="footer__legal">
+      Universidad Autónoma de Baja California © 2026. Todos los derechos reservados.
+      <a href="http://transparencia.uabc.mx/Aviso_Privacidad/index.html" target="_blank" rel="noopener">Aviso de privacidad</a>
+    </p>
+  </footer>
+
+  <script>
+    window.EGRESADOS = {{ egresados | tojson }};
+    window.IMG_BASE = "{{ url_for('static', filename='img/') }}";
+  </script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
 </html>
